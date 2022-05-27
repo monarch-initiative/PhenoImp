@@ -7,3 +7,4 @@ PhenopacketFuzzer
 A tool for fuzzing phenopackets in tool performance benchmarks.
 
 .. |JavaCIWithMaven| image:: https://github.com/monarch-initiative/PhenopacketFuzzer/workflows/Java%20CI%20with%20Maven/badge.svg
+.. _JavaCIWithMaven: https://github.com/monarch-initiative/PhenopacketFuzzer/actions/workflows/maven.yml
