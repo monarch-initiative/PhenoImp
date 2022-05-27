@@ -11,5 +11,16 @@
 
     <artifactId>phenopacket-fuzzer-cli</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.monarchinitiative.phenopacket_fuzzer</groupId>
+            <artifactId>phenopacket-fuzzer-core</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
