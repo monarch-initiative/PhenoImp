@@ -12,58 +12,63 @@ import org.phenopackets.schema.v2.core.PhenotypicFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A phenopacket fuzzer that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
+ */
 public class AddNRandomPhenotypeTerms implements PhenopacketFuzzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddNRandomPhenotypeTerms.class);
-
-    private final Ontology ontology;
+    private final RandomOntologyTermGenerator termGenerator;
     private final int numberOfTermsToAdd;
-    private final Random random;
 
+    /**
+     * Create an instance with randomness seeded by the current epoch seconds.
+     *
+     * @param ontology ontology to use.
+     * @param numberOfTermsToAdd number of terms to add to the phenopacket.
+     */
+    public AddNRandomPhenotypeTerms(Ontology ontology, int numberOfTermsToAdd) {
+        this(ontology, numberOfTermsToAdd, Instant.now().getEpochSecond());
+    }
+
+    /**
+     * Create an instance with randomness seeded by provided seed.
+     *
+     * @param ontology ontology to use.
+     * @param numberOfTermsToAdd number of terms to add to the phenopacket.
+     * @param randomSeed random seed
+     */
     public AddNRandomPhenotypeTerms(Ontology ontology, int numberOfTermsToAdd, long randomSeed) {
-        this.ontology = Objects.requireNonNull(ontology).subOntology(HpoSubOntologyRootTermIds.PHENOTYPIC_ABNORMALITY);
+        Ontology phenotypicAbnormality = Objects.requireNonNull(ontology).subOntology(HpoSubOntologyRootTermIds.PHENOTYPIC_ABNORMALITY);
+        this.termGenerator = new RandomOntologyTermGenerator(phenotypicAbnormality, randomSeed);
         this.numberOfTermsToAdd = numberOfTermsToAdd;
-        this.random = new Random(randomSeed);
     }
 
     @Override
     public Phenopacket fuzz(Phenopacket pp) {
-        /*
-        Get existing terms.
-
-         */
-        Set<TermId> presentFeatures = pp.getPhenotypicFeaturesList().stream()
+        Set<TermId> presentTermIds = pp.getPhenotypicFeaturesList().stream()
                 .filter(pf -> !pf.getExcluded())
                 .map(PhenotypicFeature::getType)
                 .map(toTermId())
                 .flatMap(Optional::stream)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(HashSet::new));
 
-        Set<TermId> nonObsoleteTermIds = new HashSet<>(ontology.getNonObsoleteTermIds());
-        nonObsoleteTermIds.remove(HpoSubOntologyRootTermIds.PHENOTYPIC_ABNORMALITY);
-
-        TermId[] allPhenotypeFeatures = nonObsoleteTermIds.stream()
-                .sorted(Comparator.comparing(TermId::getValue))
-                .toArray(TermId[]::new);
         List<Term> randomTerms = new ArrayList<>(numberOfTermsToAdd);
 
-        int i = 0;
-        while (i < numberOfTermsToAdd) {
-            int index = random.nextInt(allPhenotypeFeatures.length);
-            TermId id = allPhenotypeFeatures[index];
-            if (presentFeatures.contains(id))
-                // TODO - should we care if we're adding a parent/child term?
+        while (randomTerms.size() < numberOfTermsToAdd && termGenerator.hasNext()) {
+            Term term = termGenerator.next();
+            if (presentTermIds.contains(term.id()))
                 // we should not add already present term
+                // TODO - should we care if we're adding a parent/child of an already existing term?
                 continue;
 
-            presentFeatures.add(id); // Ensure we do not choose the same term twice
-            Term term = ontology.getTermMap().get(id);
+            presentTermIds.add(term.id()); // Ensure we do not choose the same term twice
             randomTerms.add(term);
-            i++;
         }
 
         return Phenopacket.newBuilder(pp)
@@ -82,7 +87,7 @@ public class AddNRandomPhenotypeTerms implements PhenopacketFuzzer {
         };
     }
 
-    private Iterable<? extends PhenotypicFeature> toPhenotypicFeatures(List<Term> randomTerms) {
+    private static Iterable<? extends PhenotypicFeature> toPhenotypicFeatures(List<Term> randomTerms) {
         return randomTerms.stream()
                 .map(termToPhenotypicFeature())
                 .toList();
