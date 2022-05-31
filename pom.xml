@@ -14,6 +14,7 @@
     </modules>
 
     <name>PhenopacketFuzzer</name>
+    <description>A tool for fuzzing phenopackets in tool performance benchmarks.</description>
     <url>https://github.com/monarch-initiative/PhenopacketFuzzer</url>
 
     <properties>
@@ -54,16 +55,16 @@
                 <artifactId>phenol-annotations</artifactId>
                 <version>${phenol.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.monarchinitiative.phenol</groupId>
-                <artifactId>phenol-io</artifactId>
-                <version>${phenol.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>info.picocli</groupId>
                 <artifactId>picocli</artifactId>
                 <version>4.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.monarchinitiative.biodownload</groupId>
+                <artifactId>biodownload</artifactId>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
