@@ -18,17 +18,10 @@ import static org.hamcrest.Matchers.*;
 
 public class AddNRandomPhenotypeTermsTest {
 
-    private static Ontology ONTOLOGY;
-
-    @BeforeAll
-    public static void beforeAll() {
-        ONTOLOGY = OntologyLoader.loadOntology(TestBase.TEST_BASE.resolve("hpo_toy.json").toFile());
-    }
-
     @Test
     public void fuzz() {
         int numberOfTermsToAdd = 2;
-        AddNRandomPhenotypeTerms fuzzer = new AddNRandomPhenotypeTerms(ONTOLOGY, numberOfTermsToAdd, 42L);
+        AddNRandomPhenotypeTerms fuzzer = new AddNRandomPhenotypeTerms(TestBase.HPO_TOY, numberOfTermsToAdd, 42L);
         Phenopacket phenopacket = TestCases.PHENOPACKET;
 
         Phenopacket result = fuzzer.fuzz(phenopacket);
