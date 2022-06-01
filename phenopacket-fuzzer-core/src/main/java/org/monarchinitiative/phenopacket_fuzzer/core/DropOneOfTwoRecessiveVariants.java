@@ -8,13 +8,29 @@ import org.monarchinitiative.phenol.ontology.data.Ontology;
 import org.monarchinitiative.phenol.ontology.data.TermId;
 import org.phenopackets.schema.v2.Phenopacket;
 import org.phenopackets.schema.v2.core.Disease;
+import org.phenopackets.schema.v2.core.Interpretation;
 import org.phenopackets.schema.v2.core.OntologyClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * This class expects to get a phenopacket with a single disease with AR mode of inheritance and two variant
+ * interpretations associated with the disease. One of the variant interpretations is randomly removed.
+ * <p>
+ * The class returns unchanged/original phenopacket if any of the following conditions is met:
+ * <ul>
+ *     <li>The number of present diseases is not equal to <code>1</code>.</li>
+ *     <li>The variant interpretations have non-unique ID. Note this can also happen if the IDs are unassigned as
+ *     protobuf uses <code>""</code> by default for <code>str</code> fields.</li>
+ *     <li>The disease is not known/present in among {@link #diseases}.</li>
+ *     <li>The number of variant interpretations associated with the disease is not equal to <code>2</code></li>
+ * </ul>
+ * The unmet condition is logged as a warning.
+ */
 public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DropOneOfTwoRecessiveVariants.class);
@@ -40,11 +56,24 @@ public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
                 .toList();
 
         if (observedDiseases.size() != 1) {
-            LOGGER.info("Not removing of one of the recessive variants in {} as the disease count {}!=1", pp.getId(), observedDiseases.size());
+            LOGGER.warn("The disease count {}!=1, not removing of one of the recessive variants in {}", observedDiseases.size(), pp.getId());
             return pp;
         }
 
+        // Check the interpretations have IDs unique within the phenopacket.
+        Map<String, Long> ids = pp.getInterpretationsList().stream()
+                .collect(Collectors.groupingBy(Interpretation::getId, Collectors.counting()));
+        boolean hasNonUniqueIds = ids.values().stream().anyMatch(count -> count != 1L);
+        if (hasNonUniqueIds) {
+            String nonUniqueIds = ids.entrySet().stream()
+                    .filter(e -> e.getValue() != 1L)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.joining("', '", "'", "'"));
+            LOGGER.warn("Non-unique interpretation ID(s) {}, not removing one of the recessive variants in {}", nonUniqueIds, pp.getId());
+            return pp;
+        }
 
+        // Find the disease.
         OntologyClass diseaseIdPp = pp.getDiseases(0).getTerm();
         TermId diseaseId = parseDiseaseId(diseaseIdPp);
         Optional<HpoDisease> diseaseOptional = diseases.diseaseById(diseaseId);
@@ -53,16 +82,30 @@ public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
             return pp;
         }
 
+        // Process the disease.
         boolean hasAR = diseaseHasArModeOfInheritance(diseaseOptional.get());
         if (hasAR) {
-            if (pp.getInterpretationsCount() != 2) {
-                LOGGER.info("Variant interpretation count {}!=2, not removing one of the recessive variants in {}", pp.getInterpretationsCount(), pp.getId());
+            List<Interpretation> relevantInterpretations = pp.getInterpretationsList().stream()
+                    .filter(i -> i.getDiagnosis().getDisease().getId().equals(diseaseIdPp.getId()))
+                    .toList();
+            if (relevantInterpretations.size() != 2) {
+                LOGGER.warn("The number of variant interpretation relevant to {} ({}) {}!=2, not removing one of the recessive variants in {}",
+                        diseaseIdPp.getLabel(),
+                        diseaseIdPp.getId(),
+                        relevantInterpretations.size(),
+                        pp.getId());
                 return pp;
             }
 
+            String idOfTheInterpretationToBeRemoved = relevantInterpretations.get(random.nextInt(pp.getInterpretationsCount())).getId();
+            List<Interpretation> passingInterpretations = pp.getInterpretationsList().stream()
+                    .filter(i -> !i.getId().equals(idOfTheInterpretationToBeRemoved))
+                    .toList();
+
             // Remove random interpretation.
             return pp.toBuilder()
-                    .removeInterpretations(random.nextInt(pp.getInterpretationsCount()))
+                    .clearInterpretations()
+                    .addAllInterpretations(passingInterpretations)
                     .build();
         } else
             return pp; // Nothing to be done in non-AR disease.
