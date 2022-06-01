@@ -1,6 +1,6 @@
 module org.monarchinitiative.phenopacket_fuzzer.core {
-    requires transitive phenopacket.schema;
-    requires org.phenopacket.tools.builder;
+    requires transitive org.phenopackets.schema;
+    requires org.phenopackets.phenopackettools.builder;
     requires org.monarchinitiative.phenol.core;
     requires org.slf4j;
 
