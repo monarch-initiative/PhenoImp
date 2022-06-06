@@ -1,5 +1,6 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
+import org.monarchinitiative.hellion.core.PhenopacketHellionRuntimeException;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDisease;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDiseases;
 import org.monarchinitiative.phenol.base.PhenolRuntimeException;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  * </ul>
  * The unmet condition is logged as a warning.
  */
-public class DropOneOfTwoRecessiveVariants implements PhenopacketHellion {
+public class DropOneOfTwoRecessiveVariants implements PhenopacketNoise {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DropOneOfTwoRecessiveVariants.class);
 

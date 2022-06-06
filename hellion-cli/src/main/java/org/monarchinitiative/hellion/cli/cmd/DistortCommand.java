@@ -24,7 +24,7 @@ public class DistortCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"--random-seed"},
             paramLabel = "123",
             description = "Seed for pseudorandom number generator (default: current UNIX epoch second).")
-    public long randomSeed = Instant.now().getEpochSecond();
+    public Long randomSeed;
 
     @CommandLine.Option(names = {"--add-n-random-terms"},
             paramLabel = "2",
@@ -48,6 +48,7 @@ public class DistortCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
+         // TODO - implement
         return 0;
     }
 

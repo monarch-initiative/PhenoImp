@@ -1,6 +1,8 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
 import org.junit.jupiter.api.Test;
+import org.monarchinitiative.hellion.core.TestBase;
+import org.monarchinitiative.hellion.core.TestCases;
 import org.phenopackets.schema.v2.Phenopacket;
 import org.phenopackets.schema.v2.core.OntologyClass;
 import org.phenopackets.schema.v2.core.PhenotypicFeature;

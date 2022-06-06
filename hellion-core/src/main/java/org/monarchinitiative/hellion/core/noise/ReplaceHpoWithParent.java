@@ -1,4 +1,4 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
 import org.monarchinitiative.phenol.base.PhenolRuntimeException;
 import org.monarchinitiative.phenol.ontology.algo.OntologyAlgorithm;
@@ -17,14 +17,14 @@ import java.util.*;
 import static org.monarchinitiative.phenol.constants.hpo.HpoSubOntologyRootTermIds.PHENOTYPIC_ABNORMALITY;
 
 /**
- * A hellion for replacing each phenotype term with a less specific term.
+ * A class for adding noise by replacing each phenotype term with a less specific term.
  * <p>
- * The specificity is determined by setting the {@link #nHops} parameter. Each term will be replaced with its
+ * The decrease of specificity is determined by setting the {@link #nHops} parameter. Each term will be replaced with its
  * parent term if <code>nHops == 1</code>, with grandparent term if <code>nHops == 2</code>, and so on.
  * <p>
  * If the term has multiple parents, a pseudo-random number generator is used to choose a parent term.
  */
-public class ReplaceHpoWithParent implements PhenopacketHellion {
+public class ReplaceHpoWithParent implements PhenopacketNoise {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceHpoWithParent.class);
 

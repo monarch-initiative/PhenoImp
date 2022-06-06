@@ -1,4 +1,4 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
 import org.monarchinitiative.phenol.base.PhenolRuntimeException;
 import org.monarchinitiative.phenol.constants.hpo.HpoSubOntologyRootTermIds;
@@ -18,9 +18,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A phenopacket hellion that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
+ * A class that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
  */
-public class AddNRandomPhenotypeTerms implements PhenopacketHellion {
+public class AddNRandomPhenotypeTerms implements PhenopacketNoise {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddNRandomPhenotypeTerms.class);
     private final RandomOntologyTermGenerator termGenerator;

@@ -1,8 +1,10 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.monarchinitiative.hellion.core.TestBase;
+import org.monarchinitiative.hellion.core.TestCases;
 import org.phenopackets.phenopackettools.builder.builders.PhenotypicFeatureBuilder;
 import org.phenopackets.phenopackettools.builder.builders.TimeElements;
 import org.phenopackets.phenopackettools.builder.constants.Laterality;
