@@ -6,7 +6,7 @@ Phenopacket Hellion
 |JavaCIWithMaven|_
 |GithubReleases|_
 
-A tool for tampering with phenopackets used in performance benchmarks of phenotype-driven disease/gene prioritizers.
+A tool for distorting phenopackets in disease/gene prioritizer benchmarks.
 
 
 

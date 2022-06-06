@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.monarchinitiative.phenopacket_fuzzer</groupId>
-    <artifactId>PhenopacketFuzzer</artifactId>
+    <groupId>org.monarchinitiative.hellion</groupId>
+    <artifactId>PhenopacketHellion</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <modules>
-        <module>phenopacket-fuzzer-core</module>
-        <module>phenopacket-fuzzer-cli</module>
+        <module>hellion-core</module>
+        <module>hellion-cli</module>
     </modules>
 
-    <name>PhenopacketFuzzer</name>
-    <description>A tool for fuzzing phenopackets in tool performance benchmarks.</description>
-    <url>https://github.com/monarch-initiative/PhenopacketFuzzer</url>
+    <name>PhenopacketHellion</name>
+    <description>A tool for distorting phenopackets in disease/gene prioritizer benchmarks./gene prioritizers.</description>
+    <url>https://github.com/monarch-initiative/PhenopacketHellion</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
