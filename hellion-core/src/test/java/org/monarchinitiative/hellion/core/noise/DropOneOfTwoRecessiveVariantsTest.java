@@ -1,6 +1,7 @@
-package org.monarchinitiative.hellion.core;
+package org.monarchinitiative.hellion.core.noise;
 
 import org.junit.jupiter.api.Test;
+import org.monarchinitiative.hellion.core.TestBase;
 import org.phenopackets.phenopackettools.builder.PhenopacketBuilder;
 import org.phenopackets.phenopackettools.builder.builders.*;
 import org.phenopackets.schema.v2.Phenopacket;
