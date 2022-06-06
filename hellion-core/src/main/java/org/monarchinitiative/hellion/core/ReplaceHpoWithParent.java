@@ -17,14 +17,14 @@ import java.util.*;
 import static org.monarchinitiative.phenol.constants.hpo.HpoSubOntologyRootTermIds.PHENOTYPIC_ABNORMALITY;
 
 /**
- * A fuzzer for replacing each phenotype term with a less specific term.
+ * A hellion for replacing each phenotype term with a less specific term.
  * <p>
  * The specificity is determined by setting the {@link #nHops} parameter. Each term will be replaced with its
  * parent term if <code>nHops == 1</code>, with grandparent term if <code>nHops == 2</code>, and so on.
  * <p>
  * If the term has multiple parents, a pseudo-random number generator is used to choose a parent term.
  */
-public class ReplaceHpoWithParent implements PhenopacketFuzzer {
+public class ReplaceHpoWithParent implements PhenopacketHellion {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceHpoWithParent.class);
 
@@ -38,7 +38,7 @@ public class ReplaceHpoWithParent implements PhenopacketFuzzer {
     private final Random random;
 
     /**
-     * Get a fuzzer instance seeded by the current epoch second.
+     * Get a hellion instance seeded by the current epoch second.
      *
      * @param hpo HPO ontology.
      * @param nHops number of hops to apply when searching for a less specific HPO term.
@@ -48,7 +48,7 @@ public class ReplaceHpoWithParent implements PhenopacketFuzzer {
     }
 
     /**
-     * Get a fuzzer instance seeded by the given seed.
+     * Get a hellion instance seeded by the given seed.
      *
      * @param hpo HPO ontology.
      * @param nHops number of hops to apply when searching for a less specific HPO term.
@@ -64,7 +64,7 @@ public class ReplaceHpoWithParent implements PhenopacketFuzzer {
     }
 
     @Override
-    public Phenopacket fuzz(Phenopacket pp) {
+    public Phenopacket distort(Phenopacket pp) {
         List<PhenotypicFeature> features = pp.getPhenotypicFeaturesList().stream()
                 .map(this::processPhenotypicFeature)
                 .flatMap(Optional::stream)

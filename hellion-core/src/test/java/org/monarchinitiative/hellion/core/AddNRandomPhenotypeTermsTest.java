@@ -21,7 +21,7 @@ public class AddNRandomPhenotypeTermsTest {
         AddNRandomPhenotypeTerms fuzzer = new AddNRandomPhenotypeTerms(TestBase.HPO_TOY, numberOfTermsToAdd, 42L);
         Phenopacket phenopacket = TestCases.PHENOPACKET;
 
-        Phenopacket result = fuzzer.fuzz(phenopacket);
+        Phenopacket result = fuzzer.distort(phenopacket);
 
         List<String> actual = result.getPhenotypicFeaturesList().stream()
                 .map(PhenotypicFeature::getType)

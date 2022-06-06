@@ -1,6 +1,6 @@
 package org.monarchinitiative.hellion.core;
 
-public enum FuzzStrategy {
+public enum DistortionStrategy {
 
     ADD_N_RANDOM_HPO_TERMS,
     REPLACE_HPO_WITH_PARENT,

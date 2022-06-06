@@ -35,7 +35,7 @@ public class ReplaceHpoWithParentTest {
         ReplaceHpoWithParent fuzzer = new ReplaceHpoWithParent(TestBase.HPO_TOY, nHops, 42L);
         Phenopacket pp = phenopacketWithASingleFeature("HP:0001166", "Arachnodactyly");
 
-        Phenopacket result = fuzzer.fuzz(pp);
+        Phenopacket result = fuzzer.distort(pp);
 
         List<OntologyClass> ids = result.getPhenotypicFeaturesList().stream()
                 .map(PhenotypicFeature::getType)
@@ -55,7 +55,7 @@ public class ReplaceHpoWithParentTest {
         ReplaceHpoWithParent fuzzer = new ReplaceHpoWithParent(TestBase.HPO_TOY, nHops, 42L);
         Phenopacket pp = phenopacketWithASingleFeature("HP:0001166", "Arachnodactyly");
 
-        Phenopacket result = fuzzer.fuzz(pp);
+        Phenopacket result = fuzzer.distort(pp);
 
         List<OntologyClass> ids = result.getPhenotypicFeaturesList().stream()
                 .map(PhenotypicFeature::getType)
@@ -71,7 +71,7 @@ public class ReplaceHpoWithParentTest {
         ReplaceHpoWithParent fuzzer = new ReplaceHpoWithParent(TestBase.HPO_TOY, 2, 42L);
         Phenopacket pp = phenopacketWithASingleFeature("HP:0003674", "Onset");
 
-        Phenopacket result = fuzzer.fuzz(pp);
+        Phenopacket result = fuzzer.distort(pp);
         assertThat(result.getPhenotypicFeaturesCount(), equalTo(0));
     }
 
