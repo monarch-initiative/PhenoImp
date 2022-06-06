@@ -32,6 +32,7 @@ public class DownloadCommand implements Callable<Integer> {
             BioDownloader downloader = BioDownloader.builder(datadir)
                     .overwrite(overwrite)
                     .hpoJson()
+                    .hpDiseaseAnnotations()
                     .build();
 
             downloader.download();
