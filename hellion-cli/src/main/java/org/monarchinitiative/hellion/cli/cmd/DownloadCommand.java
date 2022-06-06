@@ -11,17 +11,17 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "download",
         mixinStandardHelpOptions = true,
-        description = "Download files for Phenopacket hellion")
+        description = "Download files for Phenopacket hellion.")
 public class DownloadCommand implements Callable<Integer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DownloadCommand.class);
 
     @CommandLine.Option(names={"-d","--data"},
-            description ="directory to download data (default: ${DEFAULT-VALUE})" )
+            description ="Directory to download data (default: ${DEFAULT-VALUE})." )
     public Path datadir = Path.of("data");
 
     @CommandLine.Option(names={"-w","--overwrite"},
-            description = "overwrite previously downloaded files (default: ${DEFAULT-VALUE})")
+            description = "Overwrite previously downloaded files (default: ${DEFAULT-VALUE}).")
     public boolean overwrite = false;
 
 

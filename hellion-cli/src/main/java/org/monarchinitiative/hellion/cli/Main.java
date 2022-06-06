@@ -1,5 +1,6 @@
 package org.monarchinitiative.hellion.cli;
 
+import org.monarchinitiative.hellion.cli.cmd.DistortCommand;
 import org.monarchinitiative.hellion.cli.cmd.DownloadCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +9,9 @@ import picocli.CommandLine;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "java -jar hellion-cli.jar", mixinStandardHelpOptions = true,
+        usageHelpWidth = 120,
         version = "0.1.0-SNAPSHOT",
-        description = "A tool for distorting phenopackets in disease/gene prioritizer benchmarks.")
+        description = "A tool for distorting phenopackets in disease/gene prioritizer benchmarks.%n")
 public class Main implements Callable<Integer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -22,7 +24,8 @@ public class Main implements Callable<Integer> {
         }
 
         CommandLine cline = new CommandLine(new Main())
-                .addSubcommand("download", new DownloadCommand());
+                .addSubcommand("download", new DownloadCommand())
+                .addSubcommand("distort", new DistortCommand());
         cline.setToggleBooleanFlags(false);
         long startTime = System.currentTimeMillis();
         int exitCode = cline.execute(args);
