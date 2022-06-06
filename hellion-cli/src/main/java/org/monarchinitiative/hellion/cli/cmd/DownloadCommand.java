@@ -35,7 +35,7 @@ public class DownloadCommand implements Callable<Integer> {
                     .build();
 
             downloader.download();
-            LOGGER.info("Done!");
+            LOGGER.info("We're done here, bye!");
             return 0;
         } catch (FileDownloadException e) {
             LOGGER.error(e.getMessage(), e);
