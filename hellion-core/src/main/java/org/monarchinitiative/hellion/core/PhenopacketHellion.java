@@ -2,8 +2,8 @@ package org.monarchinitiative.hellion.core;
 
 import org.phenopackets.schema.v2.Phenopacket;
 
-public interface PhenopacketFuzzer {
+public interface PhenopacketHellion {
 
-    Phenopacket fuzz(Phenopacket pp);
+    Phenopacket distort(Phenopacket pp);
 
 }

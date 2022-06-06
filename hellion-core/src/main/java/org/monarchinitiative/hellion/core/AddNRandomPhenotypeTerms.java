@@ -18,9 +18,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A phenopacket fuzzer that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
+ * A phenopacket hellion that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
  */
-public class AddNRandomPhenotypeTerms implements PhenopacketFuzzer {
+public class AddNRandomPhenotypeTerms implements PhenopacketHellion {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddNRandomPhenotypeTerms.class);
     private final RandomOntologyTermGenerator termGenerator;
@@ -50,7 +50,7 @@ public class AddNRandomPhenotypeTerms implements PhenopacketFuzzer {
     }
 
     @Override
-    public Phenopacket fuzz(Phenopacket pp) {
+    public Phenopacket distort(Phenopacket pp) {
         Set<TermId> presentTermIds = pp.getPhenotypicFeaturesList().stream()
                 .filter(pf -> !pf.getExcluded())
                 .map(PhenotypicFeature::getType)

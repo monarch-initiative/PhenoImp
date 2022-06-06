@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * </ul>
  * The unmet condition is logged as a warning.
  */
-public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
+public class DropOneOfTwoRecessiveVariants implements PhenopacketHellion {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DropOneOfTwoRecessiveVariants.class);
 
@@ -50,7 +50,7 @@ public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
     }
 
     @Override
-    public Phenopacket fuzz(Phenopacket pp) {
+    public Phenopacket distort(Phenopacket pp) {
         List<Disease> observedDiseases = pp.getDiseasesList().stream()
                 .filter(d -> !d.getExcluded())
                 .toList();
@@ -125,7 +125,7 @@ public class DropOneOfTwoRecessiveVariants implements PhenopacketFuzzer {
         try {
             return TermId.of(diseaseId.getId());
         } catch (PhenolRuntimeException e) {
-            throw new PhenopacketFuzzerRuntimeException(e);
+            throw new PhenopacketHellionRuntimeException(e);
         }
     }
 }

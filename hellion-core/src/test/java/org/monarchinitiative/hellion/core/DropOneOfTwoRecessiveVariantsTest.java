@@ -20,7 +20,7 @@ public class DropOneOfTwoRecessiveVariantsTest {
         Phenopacket pp = phenopacketWithRecessiveDiseaseAndTwoRecessiveVariants();
         assertThat(pp.getInterpretationsCount(), equalTo(2));
 
-        Phenopacket result = fuzzer.fuzz(pp);
+        Phenopacket result = fuzzer.distort(pp);
 
         List<Interpretation> interpretations = result.getInterpretationsList();
         assertThat(interpretations.size(), equalTo(1));
