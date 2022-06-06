@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "download",
         mixinStandardHelpOptions = true,
-        description = "Download files for Phenopacket hellion.")
+        description = "Download the required data files.")
 public class DownloadCommand implements Callable<Integer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DownloadCommand.class);
