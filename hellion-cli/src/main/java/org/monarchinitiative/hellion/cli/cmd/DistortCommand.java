@@ -37,7 +37,7 @@ public class DistortCommand implements Callable<Integer> {
     public Long randomSeed;
 
     @CommandLine.Option(names = {"--add-n-random-terms"},
-            paramLabel = "2",
+            paramLabel = "0",
             description = "Add given number of random phenotype terms (default: ${DEFAULT-VALUE}).")
     public int nRandomTerms = 0;
 
