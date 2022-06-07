@@ -5,7 +5,7 @@
     <groupId>org.monarchinitiative.phenoimp</groupId>
     <artifactId>PhenoImp</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <modules>
         <module>phenoimp-core</module>
         <module>phenoimp-cli</module>
@@ -46,7 +46,7 @@
         <connection>scm:git:git@github.com:monarch-initiative/PhenoImp.git</connection>
         <developerConnection>scm:git:git@github.com:monarch-initiative/PhenoImp.git</developerConnection>
         <url>scm:git:git@github.com:monarch-initiative/PhenoImp.git</url>
-        <tag>v0.1.0</tag>
+        <tag>v${project.version}</tag>
     </scm>
 
     <dependencyManagement>
