@@ -29,6 +29,28 @@
         <slf4j.version>1.7.32</slf4j.version>
     </properties>
 
+    <developers>
+        <developer>
+            <name>Daniel Danis</name>
+            <email>daniel.danis@jax.org</email>
+            <organization>The Jackson Laboratory for Genomic Medicine</organization>
+            <organizationUrl>https://www.jax.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Peter N Robinson</name>
+            <email>peter.robinson@jax.org</email>
+            <organization>The Jackson Laboratory for Genomic Medicine</organization>
+            <organizationUrl>https://www.jax.org</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:monarch-initiative/PhenoImp.git</connection>
+        <developerConnection>scm:git:git@github.com:monarch-initiative/PhenoImp.git</developerConnection>
+        <url>scm:git:git@github.com:monarch-initiative/PhenoImp.git</url>
+        <tag>v${project.version}</tag>
+    </scm>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
