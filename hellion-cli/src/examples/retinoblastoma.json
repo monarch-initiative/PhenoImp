@@ -201,7 +201,7 @@
     "progressStatus": "SOLVED",
     "diagnosis": {
       "disease": {
-        "id": "NCIT:C7541",
+        "id": "OMIM:180200",
         "label": "Retinoblastoma"
       },
       "genomicInterpretations": [{
@@ -298,7 +298,7 @@
   }],
   "diseases": [{
     "term": {
-      "id": "NCIT:C7541",
+      "id": "OMIM:180200",
       "label": "Retinoblastoma"
     },
     "onset": {
