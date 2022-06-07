@@ -4,18 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.monarchinitiative.hellion</groupId>
-    <artifactId>PhenopacketHellion</artifactId>
+    <groupId>org.monarchinitiative.phenoimp</groupId>
+    <artifactId>PhenoImp</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <modules>
-        <module>hellion-core</module>
-        <module>hellion-cli</module>
+        <module>phenoimp-core</module>
+        <module>phenoimp-cli</module>
     </modules>
 
-    <name>PhenopacketHellion</name>
+    <name>PhenoImp</name>
     <description>A tool for distorting phenopackets in disease/gene prioritizer benchmarks./gene prioritizers.</description>
-    <url>https://github.com/monarch-initiative/PhenopacketHellion</url>
+    <url>https://github.com/monarch-initiative/PhenoImp</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
