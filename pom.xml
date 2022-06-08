@@ -8,6 +8,7 @@
     <version>0.1.1-SNAPSHOT</version>
     <modules>
         <module>phenoimp-core</module>
+        <module>phenoimp-configuration</module>
         <module>phenoimp-cli</module>
     </modules>
 
@@ -96,6 +97,16 @@
                 <groupId>org.monarchinitiative.biodownload</groupId>
                 <artifactId>biodownload</artifactId>
                 <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.13.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
