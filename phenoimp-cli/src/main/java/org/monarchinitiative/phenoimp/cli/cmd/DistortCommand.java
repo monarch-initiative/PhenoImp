@@ -18,6 +18,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,9 +86,15 @@ public class DistortCommand implements Callable<Integer> {
             }
 
             PhenoImp phenoImp = builder.build();
-            DistortionRunner runner = phenoImp.forPhenopacket(PhenopacketVersion.V2).get();
 
             // 2 - Distort the phenopacket.
+            PhenopacketVersion ppVersion = decodePhenopacketVersion(pp);
+            Optional<DistortionRunner> runnerOptional = phenoImp.forPhenopacket(ppVersion);
+            if (runnerOptional.isEmpty()) {
+                LOGGER.error("Distortion runner for phenopacket version {} is not configured", ppVersion);
+                return 1;
+            }
+            DistortionRunner runner = runnerOptional.get();
             Message distorted = runner.run(pp);
 
             // 3 - Write out the distorted phenopacket.
@@ -100,6 +107,15 @@ public class DistortCommand implements Callable<Integer> {
             LOGGER.error(e.getMessage(), e);
             return 1;
         }
+    }
+
+    private static PhenopacketVersion decodePhenopacketVersion(Message pp) {
+        if (pp instanceof org.phenopackets.schema.v1.Phenopacket)
+            return PhenopacketVersion.V1;
+        else if (pp instanceof Phenopacket) {
+            return PhenopacketVersion.V2;
+        } else
+            return PhenopacketVersion.UNKNOWN;
     }
 
     private static Message readPhenopacket(Path phenopacket) throws IOException {
