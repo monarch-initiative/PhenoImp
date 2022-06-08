@@ -132,7 +132,7 @@ public class DistortCommand implements Callable<Integer> {
                 LOGGER.info("Success!");
                 isV2 = true;
             } catch (InvalidProtocolBufferException e) {
-                LOGGER.info("Failed.");
+                LOGGER.info("Failed");
             }
 
             if (isV2)
@@ -160,14 +160,16 @@ public class DistortCommand implements Callable<Integer> {
 
     private static Path prepareOutputPath(Path output, Path phenopacket) {
         if (output == null) {
-            Pattern pt = Pattern.compile("(?<name>\\w+)\\.json");
+            Pattern pt = Pattern.compile("^(?<name>[\\w!@#$%^&*()_+-=\\[\\]{}:,.]+)\\.json$");
             String name = phenopacket.toFile().getName();
             Matcher matcher = pt.matcher(name);
             String base;
-            if (matcher.matches())
+            if (matcher.matches()) {
                 base = matcher.group("name");
-            else
-                throw new PhenoImpRuntimeException("The input file name '%s' does not match '\\w+\\.json' pattern!".formatted(phenopacket.toAbsolutePath()));
+            } else {
+                String pattern = "^[\\w!@#$%^&*()_+-=\\[\\]{}:,.]+)\\.json$";
+                throw new PhenoImpRuntimeException("The input file name '%s' does not match '%s' pattern!".formatted(phenopacket.toAbsolutePath(), pattern));
+            }
             Path parent = phenopacket.getParent();
             return parent.resolve("%s.distorted.json".formatted(base));
         }
