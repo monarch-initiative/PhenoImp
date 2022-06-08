@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * A class that adds <em>n</em> random phenotypic abnormalities to given phenopacket.
  */
-public class AddNRandomPhenotypeTerms implements PhenopacketNoise {
+public class AddNRandomPhenotypeTerms implements PhenopacketNoise<Phenopacket> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddNRandomPhenotypeTerms.class);
     private final RandomOntologyTermGenerator termGenerator;

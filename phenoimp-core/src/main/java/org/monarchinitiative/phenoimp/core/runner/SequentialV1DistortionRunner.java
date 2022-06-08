@@ -3,7 +3,7 @@ package org.monarchinitiative.phenoimp.core.runner;
 import com.google.protobuf.Message;
 import org.monarchinitiative.phenoimp.core.DistortionRunner;
 import org.monarchinitiative.phenoimp.core.noise.PhenopacketNoise;
-import org.phenopackets.schema.v2.Phenopacket;
+import org.phenopackets.schema.v1.Phenopacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Runner for v2 {@link Phenopacket}s.
+ * Runner for v1 {@link Phenopacket}s.
  */
-public class SequentialV2DistortionRunner implements DistortionRunner {
+public class SequentialV1DistortionRunner implements DistortionRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SequentialV2DistortionRunner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SequentialV1DistortionRunner.class);
 
     private final List<PhenopacketNoise<Phenopacket>> noises;
 
-    public SequentialV2DistortionRunner(List<PhenopacketNoise<Phenopacket>> noise) {
-        this.noises = Objects.requireNonNull(noise);
-        if (noise.isEmpty())
+    public SequentialV1DistortionRunner(List<PhenopacketNoise<Phenopacket>> noises) {
+        this.noises = Objects.requireNonNull(noises);
+        if (noises.isEmpty())
             LOGGER.warn("No noise will be added!");
     }
 
@@ -34,6 +34,6 @@ public class SequentialV2DistortionRunner implements DistortionRunner {
             return pp;
         }
 
-        throw new IllegalArgumentException("Provided message does not represent v2 phenopacket!");
+        throw new IllegalArgumentException("Provided message does not represent v1 phenopacket!");
     }
 }

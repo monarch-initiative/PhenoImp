@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * </ul>
  * The unmet condition is logged as a warning.
  */
-public class DropOneOfTwoRecessiveVariants implements PhenopacketNoise {
+public class DropOneOfTwoRecessiveVariants implements PhenopacketNoise<Phenopacket> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DropOneOfTwoRecessiveVariants.class);
 

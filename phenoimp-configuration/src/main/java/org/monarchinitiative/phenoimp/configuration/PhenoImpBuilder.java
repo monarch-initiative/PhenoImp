@@ -15,6 +15,7 @@ import org.monarchinitiative.phenol.annotations.io.hpo.HpoDiseaseLoaderOptions;
 import org.monarchinitiative.phenol.annotations.io.hpo.HpoDiseaseLoaders;
 import org.monarchinitiative.phenol.io.OntologyLoader;
 import org.monarchinitiative.phenol.ontology.data.Ontology;
+import org.phenopackets.schema.v2.Phenopacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +101,7 @@ public class PhenoImpBuilder {
     }
 
     private DistortionRunner buildV2DistortionRunner(Ontology hpo) {
-        List<PhenopacketNoise> noise = new ArrayList<>();
+        List<PhenopacketNoise<Phenopacket>> noise = new ArrayList<>();
         // 0 - Replace with parents or grandparents.
         if (nHops > 0) {
             LOGGER.info("Replacing each phenotype term with ancestor {} hops upstream.", nHops);

@@ -24,7 +24,7 @@ import static org.monarchinitiative.phenol.constants.hpo.HpoSubOntologyRootTermI
  * <p>
  * If the term has multiple parents, a pseudo-random number generator is used to choose a parent term.
  */
-public class ReplaceHpoWithParent implements PhenopacketNoise {
+public class ReplaceHpoWithParent implements PhenopacketNoise<Phenopacket> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceHpoWithParent.class);
 
