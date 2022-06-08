@@ -17,6 +17,10 @@
             <artifactId>phenoimp-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.monarchinitiative.phenol</groupId>
+            <artifactId>phenol-io</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
