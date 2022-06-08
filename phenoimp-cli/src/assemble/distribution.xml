@@ -27,7 +27,8 @@
             <directory>${project.basedir}/src/examples</directory>
             <outputDirectory>./examples</outputDirectory>
             <includes>
-                <include>retinoblastoma.json</include>
+                <include>mucolipidosis.v1.json</include>
+                <include>retinoblastoma.v2.json</include>
             </includes>
         </fileSet>
     </fileSets>
