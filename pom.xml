@@ -8,6 +8,7 @@
     <version>0.1.1-SNAPSHOT</version>
     <modules>
         <module>phenoimp-core</module>
+        <module>phenoimp-configuration</module>
         <module>phenoimp-cli</module>
     </modules>
 

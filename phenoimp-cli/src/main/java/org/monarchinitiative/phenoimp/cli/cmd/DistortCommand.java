@@ -1,9 +1,12 @@
 package org.monarchinitiative.phenoimp.cli.cmd;
 
+import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
+import org.monarchinitiative.phenoimp.configuration.PhenoImpBuilder;
 import org.monarchinitiative.phenoimp.core.DistortionRunner;
-import org.monarchinitiative.phenoimp.core.DistortionRunnerBuilder;
+import org.monarchinitiative.phenoimp.core.PhenoImp;
 import org.monarchinitiative.phenoimp.core.PhenoImpRuntimeException;
+import org.monarchinitiative.phenoimp.core.PhenopacketVersion;
 import org.phenopackets.schema.v2.Phenopacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +69,7 @@ public class DistortCommand implements Callable<Integer> {
             Phenopacket pp = readPhenopacket(phenopacket);
 
             // 1 - Bootstrap the runner.
-            DistortionRunnerBuilder builder = DistortionRunner.builder(dataDirectory)
+            PhenoImpBuilder builder = PhenoImpBuilder.builder(dataDirectory)
                     .addNRandomPhenotypeTerms(nRandomTerms)
                     .dropOneOfTwoRecessiveVariants(dropVariantInAutosomalRecessiveCase);
 
@@ -80,10 +83,11 @@ public class DistortCommand implements Callable<Integer> {
                 case GRANDPARENT -> builder.nHopsForTermGeneralization(2);
             }
 
-            DistortionRunner runner = builder.build();
+            PhenoImp phenoImp = builder.build();
+            DistortionRunner runner = phenoImp.forPhenopacket(PhenopacketVersion.V2).get();
 
             // 2 - Distort the phenopacket.
-            Phenopacket distorted = runner.run(pp);
+            Message distorted = runner.run(pp);
 
             // 3 - Write out the distorted phenopacket.
             Path output = prepareOutputPath(this.output, this.phenopacket);
@@ -110,11 +114,11 @@ public class DistortCommand implements Callable<Integer> {
         return builder.build();
     }
 
-    private static void writePhenopacket(Phenopacket noisy, Path output) throws IOException {
+    private static void writePhenopacket(Message distorted, Path output) throws IOException {
         LOGGER.info("Writing distorted phenopacket to {}", output.toAbsolutePath());
         JsonFormat.Printer printer = JsonFormat.printer();
         try (BufferedWriter writer = Files.newBufferedWriter(output)) {
-            printer.appendTo(noisy, writer);
+            printer.appendTo(distorted, writer);
         }
     }
 

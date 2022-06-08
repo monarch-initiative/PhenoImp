@@ -1,11 +1,14 @@
-package org.monarchinitiative.phenoimp.core;
+package org.monarchinitiative.phenoimp.configuration;
 
-import org.monarchinitiative.phenoimp.core.io.PhenoImpDataResolver;
+import org.monarchinitiative.phenoimp.core.DistortionRunner;
+import org.monarchinitiative.phenoimp.core.PhenoImp;
+import org.monarchinitiative.phenoimp.core.PhenoImpRuntimeException;
+import org.monarchinitiative.phenoimp.core.PhenopacketVersion;
 import org.monarchinitiative.phenoimp.core.noise.AddNRandomPhenotypeTerms;
 import org.monarchinitiative.phenoimp.core.noise.DropOneOfTwoRecessiveVariants;
 import org.monarchinitiative.phenoimp.core.noise.PhenopacketNoise;
 import org.monarchinitiative.phenoimp.core.noise.ReplaceHpoWithParent;
-import org.monarchinitiative.phenoimp.core.runner.SequentialDistortionRunner;
+import org.monarchinitiative.phenoimp.core.runner.SequentialV2DistortionRunner;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDiseases;
 import org.monarchinitiative.phenol.annotations.io.hpo.HpoDiseaseLoader;
 import org.monarchinitiative.phenol.annotations.io.hpo.HpoDiseaseLoaderOptions;
@@ -18,17 +21,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class DistortionRunnerBuilder {
+public class PhenoImpBuilder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistortionRunnerBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PhenoImpBuilder.class);
 
-    private final Path dataDirectory;
+    private final PhenoImpDataResolver dataResolver;
+
+    private final Ontology hpo;
+    private volatile HpoDiseases diseases = null;
     private int nRandomTerms = 0;
 
     private int nHops = 0;
@@ -37,31 +40,38 @@ public class DistortionRunnerBuilder {
 
     private long randomSeed = Instant.now().getEpochSecond();
 
-    DistortionRunnerBuilder(Path dataDirectory) {
-        this.dataDirectory = Objects.requireNonNull(dataDirectory);
+    public static PhenoImpBuilder builder(Path dataDirectory) throws PhenoImpConfigurationException {
+        return new PhenoImpBuilder(dataDirectory);
     }
 
-    public DistortionRunnerBuilder addNRandomPhenotypeTerms(int nRandomTerms) {
+    private PhenoImpBuilder(Path dataDirectory)  {
+        this.dataResolver = new PhenoImpDataResolver(Objects.requireNonNull(dataDirectory));
+        LOGGER.info("Loading HPO from {}.", dataResolver.hpJsonPath().toAbsolutePath());
+        this.hpo = OntologyLoader.loadOntology(dataResolver.hpJsonPath().toFile());
+    }
+
+    public PhenoImpBuilder addNRandomPhenotypeTerms(int nRandomTerms) {
         this.nRandomTerms = nRandomTerms;
         return this;
     }
 
-    public DistortionRunnerBuilder nHopsForTermGeneralization(int nHops) {
+    public PhenoImpBuilder nHopsForTermGeneralization(int nHops) {
         this.nHops = nHops;
         return this;
     }
 
-    public DistortionRunnerBuilder dropOneOfTwoRecessiveVariants(boolean dropArVariant) {
+    public PhenoImpBuilder dropOneOfTwoRecessiveVariants(boolean dropArVariant) {
         this.dropArVariant = dropArVariant;
         return this;
     }
 
-    public DistortionRunnerBuilder setRandomSeed(long randomSeed) {
+    public PhenoImpBuilder setRandomSeed(long randomSeed) {
         this.randomSeed = randomSeed;
         return this;
     }
 
-    public synchronized DistortionRunner build() {
+
+    public PhenoImp build() throws PhenoImpConfigurationException {
         // 0 - Check the input arguments.
         List<String> errors = new LinkedList<>();
 
@@ -77,43 +87,54 @@ public class DistortionRunnerBuilder {
             throw new PhenoImpRuntimeException(message);
         }
 
-        // 1 - Load resources.
-        PhenoImpDataResolver dataResolver = new PhenoImpDataResolver(dataDirectory);
-        LOGGER.info("Loading HPO from {}.", dataResolver.hpJsonPath().toAbsolutePath());
-        Ontology hpo = OntologyLoader.loadOntology(dataResolver.hpJsonPath().toFile());
-
-
-        List<PhenopacketNoise> noise = new ArrayList<>();
         LOGGER.info("Using {} as the random seed.", randomSeed);
 
-        // 2 - Replace with parents or grandparents.
+        // 1 - Build distortion runners.
+        Map<PhenopacketVersion, DistortionRunner> runnerMap = new HashMap<>();
+
+        DistortionRunner v2Runner = buildV2DistortionRunner(hpo);
+        runnerMap.put(PhenopacketVersion.V2, v2Runner);
+
+        // 2 - Wrap up
+        return new PhenoImpImpl(runnerMap);
+    }
+
+    private DistortionRunner buildV2DistortionRunner(Ontology hpo) {
+        List<PhenopacketNoise> noise = new ArrayList<>();
+        // 0 - Replace with parents or grandparents.
         if (nHops > 0) {
             LOGGER.info("Replacing each phenotype term with ancestor {} hops upstream.", nHops);
             ReplaceHpoWithParent replaceHpoWithParent = new ReplaceHpoWithParent(hpo, nHops, randomSeed);
             noise.add(replaceHpoWithParent);
         }
 
-        // 3 - Add n random terms.
+        // 1 - Add n random terms.
         if (nRandomTerms > 0) {
             LOGGER.info("Adding {} random phenotype terms.", nRandomTerms);
             AddNRandomPhenotypeTerms addNRandomPhenotypeTerms = new AddNRandomPhenotypeTerms(hpo, nRandomTerms, randomSeed);
             noise.add(addNRandomPhenotypeTerms);
         }
 
-        // 4 - Drop random variant for AR diseases.
+        // 2 - Drop random variant for AR diseases.
         if (dropArVariant) {
             LOGGER.info("Dropping random variant for diseases segregating with autosomal recessive mode of inheritance.");
-            HpoDiseases diseases;
-            try {
-                diseases = loadHpoDiseases(hpo, dataResolver.hpoAnnotationPath());
-            } catch (IOException e) {
-                throw new PhenoImpRuntimeException(e);
+            if (diseases == null) {
+                synchronized (this) {
+                    if (diseases == null) {
+                        try {
+                            diseases = loadHpoDiseases(hpo, dataResolver.hpoAnnotationPath());
+                        } catch (IOException e) {
+                            throw new PhenoImpRuntimeException(e);
+                        }
+                    }
+                }
             }
+
             DropOneOfTwoRecessiveVariants dropOneOfTwoRecessiveVariants = new DropOneOfTwoRecessiveVariants(hpo, diseases, randomSeed);
             noise.add(dropOneOfTwoRecessiveVariants);
         }
 
-        return new SequentialDistortionRunner(noise);
+        return new SequentialV2DistortionRunner(noise);
     }
 
     private static HpoDiseases loadHpoDiseases(Ontology hpo, Path hpoAssociation) throws IOException {

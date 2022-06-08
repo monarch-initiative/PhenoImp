@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>org.monarchinitiative.phenoimp</groupId>
-            <artifactId>phenoimp-core</artifactId>
+            <artifactId>phenoimp-configuration</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
