@@ -8,6 +8,7 @@ import org.monarchinitiative.phenoimp.core.noise.v2.AddNRandomPhenotypeTerms;
 import org.monarchinitiative.phenoimp.core.noise.v2.DropOneOfTwoRecessiveVariants;
 import org.monarchinitiative.phenoimp.core.noise.PhenopacketNoise;
 import org.monarchinitiative.phenoimp.core.noise.v2.ReplaceHpoWithParent;
+import org.monarchinitiative.phenoimp.core.runner.SequentialV1DistortionRunner;
 import org.monarchinitiative.phenoimp.core.runner.SequentialV2DistortionRunner;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDiseases;
 import org.monarchinitiative.phenol.annotations.io.hpo.HpoDiseaseLoader;
@@ -90,17 +91,52 @@ public class PhenoImpBuilder {
 
         LOGGER.info("Using {} as the random seed.", randomSeed);
 
-        // 1 - Build distortion runners.
-        Map<PhenopacketVersion, DistortionRunner> runnerMap = new HashMap<>();
-
-        DistortionRunner v2Runner = buildV2DistortionRunner(hpo);
-        runnerMap.put(PhenopacketVersion.V2, v2Runner);
-
-        // 2 - Wrap up
-        return new PhenoImpImpl(runnerMap);
+        // 1 - Build distortion runners and wrap up.
+        return new PhenoImpImpl(Map.of(
+                PhenopacketVersion.V1, buildV1DistortionRunner(),
+                PhenopacketVersion.V2, buildV2DistortionRunner()
+        ));
     }
 
-    private DistortionRunner buildV2DistortionRunner(Ontology hpo) {
+    private DistortionRunner buildV1DistortionRunner() {
+        List<PhenopacketNoise<org.phenopackets.schema.v1.Phenopacket>> noise = new ArrayList<>();
+        // 0 - Replace with parents or grandparents.
+        if (nHops > 0) {
+            LOGGER.info("Replacing each phenotype term with ancestor {} hops upstream.", nHops);
+            org.monarchinitiative.phenoimp.core.noise.v1.ReplaceHpoWithParent replaceHpoWithParent = new org.monarchinitiative.phenoimp.core.noise.v1.ReplaceHpoWithParent(hpo, nHops, randomSeed);
+            noise.add(replaceHpoWithParent);
+        }
+
+        // 1 - Add n random terms.
+        if (nRandomTerms > 0) {
+            LOGGER.info("Adding {} random phenotype terms.", nRandomTerms);
+            org.monarchinitiative.phenoimp.core.noise.v1.AddNRandomPhenotypeTerms addNRandomPhenotypeTerms = new org.monarchinitiative.phenoimp.core.noise.v1.AddNRandomPhenotypeTerms(hpo, nRandomTerms, randomSeed);
+            noise.add(addNRandomPhenotypeTerms);
+        }
+
+        // 2 - Drop random variant for AR diseases.
+        if (dropArVariant) {
+            LOGGER.info("Dropping random variant for diseases segregating with autosomal recessive mode of inheritance.");
+            if (diseases == null) {
+                synchronized (this) {
+                    if (diseases == null) {
+                        try {
+                            diseases = loadHpoDiseases(hpo, dataResolver.hpoAnnotationPath());
+                        } catch (IOException e) {
+                            throw new PhenoImpRuntimeException(e);
+                        }
+                    }
+                }
+            }
+
+            org.monarchinitiative.phenoimp.core.noise.v1.DropOneOfTwoRecessiveVariants dropOneOfTwoRecessiveVariants = new org.monarchinitiative.phenoimp.core.noise.v1.DropOneOfTwoRecessiveVariants(hpo, diseases, randomSeed);
+            noise.add(dropOneOfTwoRecessiveVariants);
+        }
+
+        return new SequentialV1DistortionRunner(noise);
+    }
+
+    private DistortionRunner buildV2DistortionRunner() {
         List<PhenopacketNoise<Phenopacket>> noise = new ArrayList<>();
         // 0 - Replace with parents or grandparents.
         if (nHops > 0) {
