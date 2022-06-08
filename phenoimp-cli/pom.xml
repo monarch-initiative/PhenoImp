@@ -3,7 +3,7 @@
     <parent>
         <artifactId>PhenoImp</artifactId>
         <groupId>org.monarchinitiative.phenoimp</groupId>
-        <version>0.1.0</version>
+        <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>org.monarchinitiative.phenoimp</groupId>
-            <artifactId>phenoimp-core</artifactId>
+            <artifactId>phenoimp-configuration</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

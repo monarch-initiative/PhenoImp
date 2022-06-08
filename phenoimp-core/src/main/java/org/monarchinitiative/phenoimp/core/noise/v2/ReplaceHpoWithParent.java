@@ -1,5 +1,6 @@
-package org.monarchinitiative.phenoimp.core.noise;
+package org.monarchinitiative.phenoimp.core.noise.v2;
 
+import org.monarchinitiative.phenoimp.core.noise.PhenopacketNoise;
 import org.monarchinitiative.phenol.base.PhenolRuntimeException;
 import org.monarchinitiative.phenol.ontology.algo.OntologyAlgorithm;
 import org.monarchinitiative.phenol.ontology.data.Ontology;
@@ -24,7 +25,7 @@ import static org.monarchinitiative.phenol.constants.hpo.HpoSubOntologyRootTermI
  * <p>
  * If the term has multiple parents, a pseudo-random number generator is used to choose a parent term.
  */
-public class ReplaceHpoWithParent implements PhenopacketNoise {
+public class ReplaceHpoWithParent implements PhenopacketNoise<Phenopacket> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceHpoWithParent.class);
 

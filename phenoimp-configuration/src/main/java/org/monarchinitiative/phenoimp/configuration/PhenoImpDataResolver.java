@@ -1,4 +1,4 @@
-package org.monarchinitiative.phenoimp.core.io;
+package org.monarchinitiative.phenoimp.configuration;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public class PhenoImpDataResolver {
         if (!errors.isEmpty()) {
             String missing = errors.stream().collect(Collectors.joining("', '", "'", "'"));
             String message = String.format("The following files are missing in the data directory: %s.", missing);
-            throw new MissingResourceException(message);
+            throw new PhenoImpConfigurationException(message);
         }
     }
 

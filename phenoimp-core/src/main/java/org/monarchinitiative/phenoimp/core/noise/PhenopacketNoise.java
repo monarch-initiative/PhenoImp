@@ -1,12 +1,12 @@
 package org.monarchinitiative.phenoimp.core.noise;
 
-import org.phenopackets.schema.v2.Phenopacket;
+import com.google.protobuf.Message;
 
 /**
  * Implementors add noise to the provided phenopacket.
  */
-public interface PhenopacketNoise {
+public interface PhenopacketNoise<T extends Message> {
 
-    Phenopacket distort(Phenopacket pp);
+    T distort(T pp);
 
 }

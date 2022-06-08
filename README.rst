@@ -18,7 +18,7 @@ estimate tool performance on real-world data.
 Tutorial
 ########
 
-This section describes how to use *PhenoImp* to add noise to an example phenopacket representing a patient with
+This section describes how to setup *PhenoImp* application and how to use it to add noise to an example phenopacket representing a patient with
 *Retinoblastoma* (`OMIM:180200 <https://www.omim.org/entry/180200>`_).
 
 Setup Java
@@ -84,20 +84,29 @@ Distort a phenopacket
 The noise is added using the ``distort`` command::
 
   $ phenoimp distort -d path/to/data -i path/to/phenopacket.json \
-    -o path/to/phenopacket.distorted.json \
-    --add-n-random-terms 2 \
-    --drop-ar-variant \
-    --approximate PARENT
+      -o path/to/phenopacket.distorted.json \
+      --add-n-random-terms 2 \
+      --drop-ar-variant \
+      --approximate PARENT
 
 where:
-* ``-i | --input``: path to input phenopacket JSON file in v2.
+* ``-i | --input``: path to v1 or v2 phenopacket in JSON format.
 * ``-o | --output``: where to write the distorted phenopacket JSON.
 * ``--add-n-random-terms``: number of random HPO terms to add.
 * ``--drop-ar-variant``: drop one of two variant interpretations if associated with disease segregating with autosomal recessive mode of inheritance.
 * ``--approximate``: replace each phenotype term with its parent (choose one from ``{OFF, PARENT, GRANDPARENT}``).
 
+Now, assuming the data directory has been set up correctly, the following command will replace all phenotype terms
+with their grandparents, add 2 random terms, and drop one of the two heterozygous variants in a real-life case
+of retinoblastoma::
 
+  $ phenoimp distort -d path/to/data -i examples/retinoblastoma.v2.json \
+      -o retinoblastoma.v2.distorted.json \
+      --add-n-random-terms 2 \
+      --approximate GRANDPARENT \
+      --drop-ar-variant
 
+The resulting JSON is stored as `retinoblastoma.v2.distorted.json`.
 
 .. |JavaCIWithMaven| image:: https://github.com/monarch-initiative/PhenoImp/workflows/Java%20CI%20with%20Maven/badge.svg
 .. _JavaCIWithMaven: https://github.com/monarch-initiative/PhenoImp/actions/workflows/maven.yml

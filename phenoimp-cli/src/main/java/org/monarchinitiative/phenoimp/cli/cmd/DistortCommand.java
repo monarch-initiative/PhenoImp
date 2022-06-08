@@ -1,9 +1,13 @@
 package org.monarchinitiative.phenoimp.cli.cmd;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
+import org.monarchinitiative.phenoimp.configuration.PhenoImpBuilder;
 import org.monarchinitiative.phenoimp.core.DistortionRunner;
-import org.monarchinitiative.phenoimp.core.DistortionRunnerBuilder;
+import org.monarchinitiative.phenoimp.core.PhenoImp;
 import org.monarchinitiative.phenoimp.core.PhenoImpRuntimeException;
+import org.monarchinitiative.phenoimp.core.PhenopacketVersion;
 import org.phenopackets.schema.v2.Phenopacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +57,7 @@ public class DistortCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-i", "--input"},
             required = true,
-            description = "Path to input phenopacket in JSON format.")
+            description = "Path to input phenopacket (v1 or v2) in JSON format.")
     public Path phenopacket;
 
     @CommandLine.Option(names = {"-o", "--output"},
@@ -63,10 +68,10 @@ public class DistortCommand implements Callable<Integer> {
     public Integer call() {
         try {
             // 0 - Read input phenopacket.
-            Phenopacket pp = readPhenopacket(phenopacket);
+            Message pp = readPhenopacket(phenopacket);
 
             // 1 - Bootstrap the runner.
-            DistortionRunnerBuilder builder = DistortionRunner.builder(dataDirectory)
+            PhenoImpBuilder builder = PhenoImpBuilder.builder(dataDirectory)
                     .addNRandomPhenotypeTerms(nRandomTerms)
                     .dropOneOfTwoRecessiveVariants(dropVariantInAutosomalRecessiveCase);
 
@@ -80,10 +85,17 @@ public class DistortCommand implements Callable<Integer> {
                 case GRANDPARENT -> builder.nHopsForTermGeneralization(2);
             }
 
-            DistortionRunner runner = builder.build();
+            PhenoImp phenoImp = builder.build();
 
             // 2 - Distort the phenopacket.
-            Phenopacket distorted = runner.run(pp);
+            PhenopacketVersion ppVersion = decodePhenopacketVersion(pp);
+            Optional<DistortionRunner> runnerOptional = phenoImp.forPhenopacket(ppVersion);
+            if (runnerOptional.isEmpty()) {
+                LOGGER.error("Distortion runner for phenopacket version {} is not configured", ppVersion);
+                return 1;
+            }
+            DistortionRunner runner = runnerOptional.get();
+            Message distorted = runner.run(pp);
 
             // 3 - Write out the distorted phenopacket.
             Path output = prepareOutputPath(this.output, this.phenopacket);
@@ -97,37 +109,67 @@ public class DistortCommand implements Callable<Integer> {
         }
     }
 
-    private static Phenopacket readPhenopacket(Path phenopacket) throws IOException {
+    private static PhenopacketVersion decodePhenopacketVersion(Message pp) {
+        if (pp instanceof org.phenopackets.schema.v1.Phenopacket)
+            return PhenopacketVersion.V1;
+        else if (pp instanceof Phenopacket) {
+            return PhenopacketVersion.V2;
+        } else
+            return PhenopacketVersion.UNKNOWN;
+    }
+
+    private static Message readPhenopacket(Path phenopacket) throws IOException {
         // `phenopacket` should not be null as it is a required parameter.
         LOGGER.info("Reading input phenopacket from {}", phenopacket.toAbsolutePath());
 
         JsonFormat.Parser parser = JsonFormat.parser();
-        Phenopacket.Builder builder = Phenopacket.newBuilder();
-        try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
-            parser.merge(reader, builder);
+        boolean isV2 = false;
+        {
+            Phenopacket.Builder builder = Phenopacket.newBuilder();
+            try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
+                LOGGER.info("Trying to decode the input as v2 phenopacket");
+                parser.merge(reader, builder);
+                LOGGER.info("Success!");
+                isV2 = true;
+            } catch (InvalidProtocolBufferException e) {
+                LOGGER.info("Failed");
+            }
+
+            if (isV2)
+                return builder.build();
         }
 
-        return builder.build();
+        {
+            org.phenopackets.schema.v1.Phenopacket.Builder builder = org.phenopackets.schema.v1.Phenopacket.newBuilder();
+            try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
+                LOGGER.info("Falling back to v1 phenopacket");
+                parser.merge(reader, builder);
+                LOGGER.info("Success!");
+            }
+            return builder.build();
+        }
     }
 
-    private static void writePhenopacket(Phenopacket noisy, Path output) throws IOException {
+    private static void writePhenopacket(Message distorted, Path output) throws IOException {
         LOGGER.info("Writing distorted phenopacket to {}", output.toAbsolutePath());
         JsonFormat.Printer printer = JsonFormat.printer();
         try (BufferedWriter writer = Files.newBufferedWriter(output)) {
-            printer.appendTo(noisy, writer);
+            printer.appendTo(distorted, writer);
         }
     }
 
     private static Path prepareOutputPath(Path output, Path phenopacket) {
         if (output == null) {
-            Pattern pt = Pattern.compile("(?<name>\\w+)\\.json");
+            Pattern pt = Pattern.compile("^(?<name>[\\w!@#$%^&*()_+-=\\[\\]{}:,.]+)\\.json$");
             String name = phenopacket.toFile().getName();
             Matcher matcher = pt.matcher(name);
             String base;
-            if (matcher.matches())
+            if (matcher.matches()) {
                 base = matcher.group("name");
-            else
-                throw new PhenoImpRuntimeException("The input file name '%s' does not match '\\w+\\.json' pattern!".formatted(phenopacket.toAbsolutePath()));
+            } else {
+                String pattern = "^[\\w!@#$%^&*()_+-=\\[\\]{}:,.]+)\\.json$";
+                throw new PhenoImpRuntimeException("The input file name '%s' does not match '%s' pattern!".formatted(phenopacket.toAbsolutePath(), pattern));
+            }
             Path parent = phenopacket.getParent();
             return parent.resolve("%s.distorted.json".formatted(base));
         }

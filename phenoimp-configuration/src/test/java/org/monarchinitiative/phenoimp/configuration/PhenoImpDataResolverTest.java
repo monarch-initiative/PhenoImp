@@ -1,7 +1,6 @@
-package org.monarchinitiative.phenoimp.core.io;
+package org.monarchinitiative.phenoimp.configuration;
 
 import org.junit.jupiter.api.Test;
-import org.monarchinitiative.phenoimp.core.TestBase;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,7 @@ public class PhenoImpDataResolverTest {
 
     @Test
     public void error() {
-        MissingResourceException e = assertThrows(MissingResourceException.class, () -> new PhenoImpDataResolver(Path.of("")));
+        PhenoImpConfigurationException e = assertThrows(PhenoImpConfigurationException.class, () -> new PhenoImpDataResolver(Path.of("")));
         assertThat(e.getMessage(), equalTo("The following files are missing in the data directory: 'hp.json', 'phenotype.hpoa'."));
     }
 
