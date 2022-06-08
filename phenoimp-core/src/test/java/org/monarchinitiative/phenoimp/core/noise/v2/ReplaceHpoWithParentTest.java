@@ -1,4 +1,4 @@
-package org.monarchinitiative.phenoimp.core.noise;
+package org.monarchinitiative.phenoimp.core.noise.v2;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

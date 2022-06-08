@@ -1,6 +1,7 @@
-package org.monarchinitiative.phenoimp.core.noise;
+package org.monarchinitiative.phenoimp.core.noise.v2;
 
 import org.monarchinitiative.phenoimp.core.PhenoImpRuntimeException;
+import org.monarchinitiative.phenoimp.core.noise.PhenopacketNoise;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDisease;
 import org.monarchinitiative.phenol.annotations.formats.hpo.HpoDiseases;
 import org.monarchinitiative.phenol.base.PhenolRuntimeException;

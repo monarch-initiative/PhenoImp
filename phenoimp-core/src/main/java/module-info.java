@@ -11,5 +11,7 @@ module org.monarchinitiative.phenoimp.core {
     exports org.monarchinitiative.phenoimp.core;
     exports org.monarchinitiative.phenoimp.core.noise to org.monarchinitiative.phenoimp.configuration;
     exports org.monarchinitiative.phenoimp.core.runner to org.monarchinitiative.phenoimp.configuration;
+    exports org.monarchinitiative.phenoimp.core.noise.v1 to org.monarchinitiative.phenoimp.configuration;
+    exports org.monarchinitiative.phenoimp.core.noise.v2 to org.monarchinitiative.phenoimp.configuration;
 
 }

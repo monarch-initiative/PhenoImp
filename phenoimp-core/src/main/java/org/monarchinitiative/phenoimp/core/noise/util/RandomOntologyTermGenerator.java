@@ -1,4 +1,4 @@
-package org.monarchinitiative.phenoimp.core.noise;
+package org.monarchinitiative.phenoimp.core.noise.util;
 
 import org.monarchinitiative.phenol.ontology.data.Ontology;
 import org.monarchinitiative.phenol.ontology.data.Term;
@@ -10,17 +10,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
 
-class RandomOntologyTermGenerator implements Iterator<Term> {
+public class RandomOntologyTermGenerator implements Iterator<Term> {
 
     private final Random random;
     private final TermId[] nonObsoleteTermIds;
     private final Map<TermId, Term> termIdToTerm;
 
-    RandomOntologyTermGenerator(Ontology ontology) {
+    public RandomOntologyTermGenerator(Ontology ontology) {
         this(ontology, Instant.now().getEpochSecond());
     }
 
-    RandomOntologyTermGenerator(Ontology ontology, long randomSeed) {
+    public RandomOntologyTermGenerator(Ontology ontology, long randomSeed) {
         this.termIdToTerm = ontology.getTermMap();
         this.nonObsoleteTermIds = ontology.getNonObsoleteTermIds().toArray(TermId[]::new);
         this.random = new Random(randomSeed);
