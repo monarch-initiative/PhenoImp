@@ -1,5 +1,6 @@
 package org.monarchinitiative.phenoimp.cli.cmd;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import org.monarchinitiative.phenoimp.configuration.PhenoImpBuilder;
@@ -55,7 +56,7 @@ public class DistortCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-i", "--input"},
             required = true,
-            description = "Path to input phenopacket in JSON format.")
+            description = "Path to input phenopacket (v1 or v2) in JSON format.")
     public Path phenopacket;
 
     @CommandLine.Option(names = {"-o", "--output"},
@@ -66,7 +67,7 @@ public class DistortCommand implements Callable<Integer> {
     public Integer call() {
         try {
             // 0 - Read input phenopacket.
-            Phenopacket pp = readPhenopacket(phenopacket);
+            Message pp = readPhenopacket(phenopacket);
 
             // 1 - Bootstrap the runner.
             PhenoImpBuilder builder = PhenoImpBuilder.builder(dataDirectory)
@@ -101,17 +102,36 @@ public class DistortCommand implements Callable<Integer> {
         }
     }
 
-    private static Phenopacket readPhenopacket(Path phenopacket) throws IOException {
+    private static Message readPhenopacket(Path phenopacket) throws IOException {
         // `phenopacket` should not be null as it is a required parameter.
         LOGGER.info("Reading input phenopacket from {}", phenopacket.toAbsolutePath());
 
         JsonFormat.Parser parser = JsonFormat.parser();
-        Phenopacket.Builder builder = Phenopacket.newBuilder();
-        try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
-            parser.merge(reader, builder);
+        boolean isV2 = false;
+        {
+            Phenopacket.Builder builder = Phenopacket.newBuilder();
+            try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
+                LOGGER.info("Trying to decode the input as v2 phenopacket");
+                parser.merge(reader, builder);
+                LOGGER.info("Success!");
+                isV2 = true;
+            } catch (InvalidProtocolBufferException e) {
+                LOGGER.info("Failed.");
+            }
+
+            if (isV2)
+                return builder.build();
         }
 
-        return builder.build();
+        {
+            org.phenopackets.schema.v1.Phenopacket.Builder builder = org.phenopackets.schema.v1.Phenopacket.newBuilder();
+            try (BufferedReader reader = Files.newBufferedReader(phenopacket)) {
+                LOGGER.info("Falling back to v1 phenopacket");
+                parser.merge(reader, builder);
+                LOGGER.info("Success!");
+            }
+            return builder.build();
+        }
     }
 
     private static void writePhenopacket(Message distorted, Path output) throws IOException {
