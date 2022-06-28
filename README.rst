@@ -40,7 +40,7 @@ Download distribution archive or build from sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First, let's get ahold of the executable JAR file download the distribution ZIP from `Releases section <https://github.com/monarch-initiative/PhenoImp/releases>`_.
-The archive contains executable JAR file ``phenoimp-cli-0.1.0.jar``.
+The archive contains executable JAR file ``phenoimp-cli-${version}.jar``.
 
 Alternatively, we can build the JAR file from source by running::
 
@@ -51,7 +51,7 @@ Alternatively, we can build the JAR file from source by running::
 .. note::
   A JDK 17 or better is required to build and run *PhenoImp*.
 
-After the successful build, the JAR file is located at ``phenoimp-cli/target/phenoimp-cli-0.1.0.jar``.
+After the successful build, the JAR file is located at ``phenoimp-cli/target/phenoimp-cli-${version}.jar``.
 Ensure that the build went well by running::
 
   $ java -jar phenoimp-cli/target/phenoimp-cli-*.jar --help
@@ -107,6 +107,22 @@ of retinoblastoma::
       --drop-ar-variant
 
 The resulting JSON is stored as `retinoblastoma.v2.distorted.json`.
+
+Build container
+###############
+
+Build *PhenoImp* Docker container by running the following steps::
+
+  $ CONTAINER=<your_organization>/phenoimp:<version>
+  $ BUILD_CONTEXT=docker
+  $ cd PhenoImp
+  $ ./mvnw clean package -Prelease
+  $ cp phenoimp-cli/target/*.distribution.zip docker
+  $ docker build -t ${CONTAINER} ${BUILD_CONTEXT}
+  $ rm ${BUILD_CONTEXT}/*.zip
+
+.. note::
+  Ensure ``your_organization`` and ``version`` are set to meaningful values.
 
 .. |JavaCIWithMaven| image:: https://github.com/monarch-initiative/PhenoImp/workflows/Java%20CI%20with%20Maven/badge.svg
 .. _JavaCIWithMaven: https://github.com/monarch-initiative/PhenoImp/actions/workflows/maven.yml

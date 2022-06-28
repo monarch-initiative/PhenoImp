@@ -2,9 +2,15 @@
 CHANGELOG
 =========
 
+------
+v0.2.1
+------
+
+- Add missing JAR file into the distribution archive.
+- Configure recipe for building Docker container.
 
 ------
-latest
+v0.2.0
 ------
 
 - implement base functionality, including `download` command for setting up data directory and `distort` for distorting phenopacket.
