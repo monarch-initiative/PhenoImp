@@ -108,6 +108,22 @@ of retinoblastoma::
 
 The resulting JSON is stored as `retinoblastoma.v2.distorted.json`.
 
+Build container
+###############
+
+Build *PhenoImp* Docker container by running the following steps::
+
+  $ CONTAINER=<your_organization>/phenoimp:<version>
+  $ BUILD_CONTEXT=docker
+  $ cd PhenoImp
+  $ ./mvnw clean package -Prelease
+  $ cp phenoimp-cli/target/*.distribution.zip docker
+  $ docker build -t ${CONTAINER} ${BUILD_CONTEXT}
+  $ rm ${BUILD_CONTEXT}/*.zip
+
+.. note::
+  Ensure ``your_organization`` and ``version`` are set to meaningful values.
+
 .. |JavaCIWithMaven| image:: https://github.com/monarch-initiative/PhenoImp/workflows/Java%20CI%20with%20Maven/badge.svg
 .. _JavaCIWithMaven: https://github.com/monarch-initiative/PhenoImp/actions/workflows/maven.yml
 
