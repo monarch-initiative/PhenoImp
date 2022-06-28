@@ -1,5 +1,5 @@
 #!/bin/sh
 
-PHENOIMP=$(find /opt/phenoimp -name "*.jar")
+PHENOIMP=$(find /opt/phenoimp -name "phenoimp-cli-*.jar")
 
 java -jar ${PHENOIMP} ${@}
