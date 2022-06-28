@@ -19,7 +19,7 @@
             <directory>${project.build.directory}</directory>
             <outputDirectory>./</outputDirectory>
             <includes>
-                <include>phenoimp-cli-${version}.jar</include>
+                <include>hellion-cli-${version}.jar</include>
                 <include>lib/</include>
             </includes>
         </fileSet>
