@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "java -jar phenoimp-cli.jar",
         mixinStandardHelpOptions = true,
         usageHelpWidth = 120,
-        version = "0.1.0-SNAPSHOT",
+        version = "0.2.1",
         description = "A tool for distorting phenopackets in disease/gene prioritizer benchmarks.%n")
 public class Main implements Callable<Integer> {
 
