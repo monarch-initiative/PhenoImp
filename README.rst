@@ -117,12 +117,16 @@ Build *PhenoImp* Docker container by running the following steps::
   $ BUILD_CONTEXT=docker
   $ cd PhenoImp
   $ ./mvnw clean package -Prelease
-  $ cp phenoimp-cli/target/*.distribution.zip docker
+  $ cp phenoimp-cli/target/phenoimp-cli-*distribution.zip docker
   $ docker build -t ${CONTAINER} ${BUILD_CONTEXT}
   $ rm ${BUILD_CONTEXT}/*.zip
 
 .. note::
   Ensure ``your_organization`` and ``version`` are set to meaningful values.
+
+Check that the build worked by running::
+
+  $ docker run -it --rm ${CONTAINER} phenoimp --help
 
 .. |JavaCIWithMaven| image:: https://github.com/monarch-initiative/PhenoImp/workflows/Java%20CI%20with%20Maven/badge.svg
 .. _JavaCIWithMaven: https://github.com/monarch-initiative/PhenoImp/actions/workflows/maven.yml
