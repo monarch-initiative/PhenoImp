@@ -3,6 +3,12 @@ CHANGELOG
 =========
 
 ------
+v0.2.2
+------
+
+- do not seed by epoch second if random seed is not provided, but generate the random seed randomly.
+
+------
 v0.2.1
 ------
 
