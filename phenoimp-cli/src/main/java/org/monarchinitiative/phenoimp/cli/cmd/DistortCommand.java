@@ -73,10 +73,8 @@ public class DistortCommand implements Callable<Integer> {
             // 1 - Bootstrap the runner.
             PhenoImpBuilder builder = PhenoImpBuilder.builder(dataDirectory)
                     .addNRandomPhenotypeTerms(nRandomTerms)
-                    .dropOneOfTwoRecessiveVariants(dropVariantInAutosomalRecessiveCase);
-
-            if (randomSeed != null)
-                builder.setRandomSeed(randomSeed);
+                    .dropOneOfTwoRecessiveVariants(dropVariantInAutosomalRecessiveCase)
+                    .setRandomSeed(randomSeed);
 
             switch (ancestor) {
                 case OFF -> {

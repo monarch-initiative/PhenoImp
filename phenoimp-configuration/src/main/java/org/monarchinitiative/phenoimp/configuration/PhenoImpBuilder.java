@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,7 @@ public class PhenoImpBuilder {
 
     private boolean dropArVariant = false;
 
-    private long randomSeed = Instant.now().getEpochSecond();
+    private Long randomSeed;
 
     public static PhenoImpBuilder builder(Path dataDirectory) throws PhenoImpConfigurationException {
         return new PhenoImpBuilder(dataDirectory);
@@ -67,7 +66,7 @@ public class PhenoImpBuilder {
         return this;
     }
 
-    public PhenoImpBuilder setRandomSeed(long randomSeed) {
+    public PhenoImpBuilder setRandomSeed(Long randomSeed) {
         this.randomSeed = randomSeed;
         return this;
     }
@@ -89,6 +88,8 @@ public class PhenoImpBuilder {
             throw new PhenoImpRuntimeException(message);
         }
 
+        if (randomSeed == null)
+                randomSeed = new Random().nextLong();
         LOGGER.info("Using {} as the random seed.", randomSeed);
 
         // 1 - Build distortion runners and wrap up.
