@@ -90,11 +90,12 @@ The noise is added using the ``distort`` command::
       --approximate PARENT
 
 where:
-* ``-i | --input``: path to v1 or v2 phenopacket in JSON format.
-* ``-o | --output``: where to write the distorted phenopacket JSON.
-* ``--add-n-random-terms``: number of random HPO terms to add.
-* ``--drop-ar-variant``: drop one of two variant interpretations if associated with disease segregating with autosomal recessive mode of inheritance.
-* ``--approximate``: replace each phenotype term with its parent (choose one from ``{OFF, PARENT, GRANDPARENT}``).
+
+- ``-i | --input``: path to v1 or v2 phenopacket in JSON format.
+- ``-o | --output``: where to write the distorted phenopacket JSON.
+- ``--add-n-random-terms``: number of random HPO terms to add.
+- ``--drop-ar-variant``: drop one of two variant interpretations if associated with disease segregating with autosomal recessive mode of inheritance.
+- ``--approximate``: replace each phenotype term with its parent (choose one from ``{OFF, PARENT, GRANDPARENT}``).
 
 Now, assuming the data directory has been set up correctly, the following command will replace all phenotype terms
 with their grandparents, add 2 random terms, and drop one of the two heterozygous variants in a real-life case
